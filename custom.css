@@ -1,0 +1,24 @@
+.symbol {
+ margin-right: 10px;
+ font-size: 120%;
+}
+
+.temp-hot {
+ color: #ffb3ba;
+}
+
+.temp-warm {
+ color: #ffdfba;
+}
+
+.temp-average {
+ color: #ffffba;
+}
+
+.temp-cold {
+ color: #baffc9;
+}
+
+.temp-freezing {
+ color: #bae1ff;
+}
