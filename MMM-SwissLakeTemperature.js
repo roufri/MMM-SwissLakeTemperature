@@ -17,27 +17,19 @@ Module.register("MMM-SwissLakeTemperature", {
 		temperatureDiv.id = "temperatureDiv";
 		temperatureDiv.innerHTML = "Loading water temperature...";
 
-		var xCoord = this.config.xCoordinate;
-		var yCoord = this.config.yCoordinate;
-		var lake = this.config.lake;
-		var depth = this.config.depth;
-		var endTime = Date.now();
-		var startTime = endTime - (1000 * 60 * 60); // 1 hour back
-
-		this.url = `http://meteolakes.ch/api/coordinates/${xCoord}/${yCoord}/${lake}/temperature/${startTime}/${endTime}/${depth}`;
-
 		return temperatureDiv;
 	},
 	notificationReceived: function (notification, payload, sender) {
 		switch (notification) {
 			case "DOM_OBJECTS_CREATED":
 				// initial data load
-				this.sendSocketNotification("LOAD_WATER_DATA", this.url);
+				console.log("Url: " + this.getRequestUrl());
+				this.sendSocketNotification("LOAD_WATER_DATA", this.getRequestUrl());
 
-				// update every 3.25 hours
+				// update every 1.0 hours
 				var time = setInterval(() => {
-					this.sendSocketNotification("LOAD_WATER_DATA", this.url);
-				}, (1000 * 60 * 60 * 3.25))
+					this.sendSocketNotification("LOAD_WATER_DATA", this.getRequestUrl());
+				}, (1000 * 60 * 60 * 1.0))
 				break;
 		}
 	},
@@ -56,17 +48,27 @@ Module.register("MMM-SwissLakeTemperature", {
 
 				temperatureDiv.appendChild(symbol);
 				temperatureDiv.appendChild(text);
+				console.log("UPDATED WATER DATA: " + data.temperature + " at " + data.depth);
 				break;
 		}
 	},
+	getRequestUrl: function() {
+		var xCoord = this.config.xCoordinate;
+		var yCoord = this.config.yCoordinate;
+		var lake = this.config.lake;
+		var depth = this.config.depth;
+		var endTime = Date.now();
+		var startTime = endTime - (1000 * 60 * 60); // 1 hour back
 
+		return `http://meteolakes.ch/api/coordinates/${xCoord}/${yCoord}/${lake}/temperature/${startTime}/${endTime}/${depth}`;
+	},
 	/**
-	* Get the temperature-dependent css-class (icon + color)
-	* https://fontawesome.com/icons?d=gallery&q=thermometer
-	*
-	* @param temperature in celsius
-	* @returns a String with the class-name
-	*/
+	 * Get the temperature-dependent css-class (icon + color)
+	 * https://fontawesome.com/icons?d=gallery&q=thermometer
+	 *
+	 * @param temperature in celsius
+	 * @returns a String with the class-name
+	 */
 	getSymbolClassForTemperature: function (temperature) {
 		if (temperature >= 22) {
 			return "fa-thermometer-full temp-hot";
@@ -80,4 +82,4 @@ Module.register("MMM-SwissLakeTemperature", {
 			return "fa-thermometer-empty temp-freezing";
 		}
 	}
-})
+});

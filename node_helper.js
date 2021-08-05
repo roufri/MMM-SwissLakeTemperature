@@ -5,7 +5,7 @@ module.exports = NodeHelper.create({
 	socketNotificationReceived: function (notification, payload) {
 		switch (notification) {
 			case "LOAD_WATER_DATA":
-				console.log("LOAD_WATER_DATA");
+				console.log("Fetch water data from " + payload);
 				// send request to get csv from http://meteolakes.ch/#!/data
 				request(
 					{
@@ -20,7 +20,7 @@ module.exports = NodeHelper.create({
 
 								var depth = Math.abs(parseFloat(waterData[0]));
 								var temperature = parseFloat(waterData[1]).toFixed(1);
-
+								console.log("Fetched water data: " + temperature + " at " + depth);
 								var waterData = {
 									"temperature": temperature,
 									"depth": depth
