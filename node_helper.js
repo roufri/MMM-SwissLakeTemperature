@@ -6,7 +6,7 @@ module.exports = NodeHelper.create({
 		switch (notification) {
 			case "LOAD_WATER_DATA":
 				console.log("Fetch water data from " + payload);
-				// send request to get csv from http://meteolakes.ch/#!/data
+				// send request to get json from https://www.alplakes.eawag.ch/api
 				request(
 					{
 						url: payload,
@@ -16,17 +16,19 @@ module.exports = NodeHelper.create({
 					(error, response, body) => {
 						if (!error) {
 							if (response.statusCode === 200) {
-								var waterData = body.toString('utf8').split('\n')[1].split(',');
+								var lakeData = JSON.parse(body);
 
-								var depth = Math.abs(parseFloat(waterData[0]));
-								var temperature = parseFloat(waterData[1]).toFixed(1);
+								var depth = Math.round(lakeData.depth.data * 10) / 10;
+								var temperature = Math.round(lakeData.variables.temperature.data[0] * 10) / 10;
+
 								console.log("Fetched water data: " + temperature + " at " + depth);
+
 								var waterData = {
 									"temperature": temperature,
 									"depth": depth
 								}
 
-								this.sendSocketNotification("LOADED_WATER_DATA", JSON.stringify(waterData));
+								this.sendSocketNotification("LOADED_WATER_DATA", waterData);
 							} else if (response.statusCode > 400) {
 								console.log("No file found at url " + payload);
 							}

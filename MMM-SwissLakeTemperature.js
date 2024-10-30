@@ -1,8 +1,8 @@
 Module.register("MMM-SwissLakeTemperature", {
 	defaults: {
 		// default Coordinates are pointing to Zurich Bellevue
-		xCoordinate: '683474',
-		yCoordinate: '246769',
+		latitude: '47.36539',
+		longitude: '8.54305',
 		lake: 'zurich',
 		depth: '1'
 	},
@@ -36,31 +36,44 @@ Module.register("MMM-SwissLakeTemperature", {
 	socketNotificationReceived: function (notification, payload) {
 		switch (notification) {
 			case "LOADED_WATER_DATA":
-				var data = JSON.parse(payload);
+				var waterData = payload;
 
 				var temperatureDiv = document.getElementById("temperatureDiv");
 				temperatureDiv.innerHTML = ""; // overwrite loading text
 
 				var symbol = document.createElement("span");
-				symbol.className = "symbol fas " + this.getSymbolClassForTemperature(data.temperature);
+				symbol.className = "symbol fas " + this.getSymbolClassForTemperature(waterData.temperature);
 
-				var text = document.createTextNode(data.temperature + "°C in " + data.depth + "m Tiefe");
+				var text = document.createTextNode(waterData.temperature + "°C in " + waterData.depth + "m Tiefe");
 
 				temperatureDiv.appendChild(symbol);
 				temperatureDiv.appendChild(text);
-				console.log("UPDATED WATER DATA: " + data.temperature + " at " + data.depth);
+				console.log("UPDATED WATER DATA: " + waterData.temperature + " at " + waterData.depth);
 				break;
 		}
 	},
 	getRequestUrl: function() {
-		var xCoord = this.config.xCoordinate;
-		var yCoord = this.config.yCoordinate;
+		var latitude = this.config.latitude;
+		var longitude = this.config.longitude;
 		var lake = this.config.lake;
 		var depth = this.config.depth;
-		var endTime = Date.now();
-		var startTime = endTime - (1000 * 60 * 60); // 1 hour back
 
-		return `http://meteolakes.ch/api/coordinates/${xCoord}/${yCoord}/${lake}/temperature/${startTime}/${endTime}/${depth}`;
+		var now = new Date();
+		var threeHoursBack = new Date(now.getTime() - (1000 * 60 * 60 * 3));
+
+		var endTime = this.formatDateToUTC(now);
+		var startTime = this.formatDateToUTC(threeHoursBack);
+
+		return `https://alplakes-api.eawag.ch/simulations/point/delft3d-flow/${lake}/${startTime}/${endTime}/${depth}/${latitude}/${longitude}`;
+	},
+	formatDateToUTC: function(date) {
+		const year = date.getUTCFullYear();
+		const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // months are zero-based
+		const day = String(date.getUTCDate()).padStart(2, '0');
+		const hours = String(date.getUTCHours()).padStart(2, '0');
+		const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+
+		return `${year}${month}${day}${hours}${minutes}`;
 	},
 	/**
 	 * Get the temperature-dependent css-class (icon + color)
