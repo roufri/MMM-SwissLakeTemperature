@@ -1,7 +1,8 @@
 # MMM-SwissLakeTemperature
 Display the temperature of a Swiss lake at a given point on your MagicMirror.
 
-This module uses data from EPFL [Meteolakes API](http://meteolakes.ch/#!/data).
+This module uses data from the [Alplakes API](https://www.alplakes.eawag.ch/api)
+*(formerly the EPFL [Meteolakes API](http://meteolakes.ch/#!/data))*.
 
 
 ## Example screenshots
@@ -36,16 +37,16 @@ To use this module, add the following configuration block to the modules array i
 ```js
 modules: [
 	{
-			module: 'MMM-SwissLakeTemperature',
-			position: 'top_left',
-			header: 'Water temperature',
-			config: {
-				xCoordinate: '683474',
-				yCoordinate: '246769',
-				lake: 'zurich',
-				depth: '2'
-			}
-		},
+		module: 'MMM-SwissLakeTemperature',
+		position: 'top_left',
+		header: 'Water temperature',
+		config: {
+			latitude: '47.36539',
+			longitude: '8.54305',
+			lake: 'zurich',
+			depth: '1'
+		}
+	},
 ]
 ```
 
@@ -53,19 +54,19 @@ modules: [
 
 | Option           | Description
 |----------------- |-----------
-| `xCoordinate`        | X-Coordinate of the point in the lake (CH1903/LV03). <br><br>**Type:** `String` <br>Default 683474 (pointing to Zurich Bellevue)
-| `yCoordinate `        | Y-Coordinate of the point in the lake (CH1903/LV03). <br><br>**Type:** `String` <br>Default 246769 (pointing to Zurich Bellevue)
-| `lake `        | The desired lake to measure the temperature. [Check available lakes here](http://meteolakes.ch/#!/data) <br><br>**Type:** `String` <br>Default zurich
-| `depth`        | Depth where the water temperature should be measured (in metres). <br><br>**Type:** `String` <br>Default 1
+| `latitude`       | Latitude (x-coordinate) of the point in the lake (WGS 84). <br><br>**Type:** `String` <br>Default 47.36539 (pointing to Zurich Bellevue)
+| `longitude `     | Longitude (y-coordinate) of the point in the lake (WGS 84). <br><br>**Type:** `String` <br>Default 8.54305 (pointing to Zurich Bellevue)
+| `lake `          | The desired lake to measure the temperature.<br>[Check available lakes here](https://www.alplakes.eawag.ch/api) (go down to Schemas > Lakes > Enum) <br><br>**Type:** `String` <br>Default zurich
+| `depth`          | Depth where the water temperature should be measured (in metres). <br><br>**Type:** `String` <br>Default 1
 
 ## Dependencies
 
-This module uses the [Meteolakes API](http://meteolakes.ch/#!/data) which is free and does not require a key.
+This module uses the [Alplakes API](https://www.alplakes.eawag.ch/api) which is free and does not require a key.
 
-## Find the CH1903/LV03-Coordinate
+## Find the WGS 84 coordinates
 1. Go to https://map.geo.admin.ch/.
 2. Find your lake and press right click on the desired point.
-3. Get the coordinates where it says «CH1903/LV03».
+3. Get the coordinates where it says «WGS 84 (lat/lon)».
 
 ![Coordinates](https://github.com/roufri/MMM-SwissLakeTemperature/blob/main/screenshots/coordinates.png)
 
